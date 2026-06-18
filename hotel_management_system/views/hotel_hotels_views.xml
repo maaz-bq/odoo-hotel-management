@@ -1,0 +1,428 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        <odoo>
+            <record id="view_hotel_hotels_kanban" model="ir.ui.view">
+                <field name="name">hotel.hotels.kanban</field>
+                <field name="model">hotel.hotels</field>
+                <field name="arch" type="xml">
+                    <kanban sample="1">
+                        <field name="image"/>
+                        <field name="name"/>
+                        <field name="partner_id"/>
+                        <field name="hotel_type_id"/>
+                        <field name="address"/>
+                        <field name="is_published"/>
+                        <field name="rating_count"/>
+                        <field name="rating_percentage_satisfaction"/>
+                        
+                        <templates>
+                            <t t-name="card" class="d-flex flex-column">
+                                <div class="d-flex flex-row" style="height:100%;">
+                                        <div class="o_kanban_image_fill position-relative w-100" style="width:50% !important;min-width: 50% !important;">
+                                            <field
+                                                name="image"
+                                                
+                                                class="h-100" widget="image" options="{'img_class': 'rounded h-100'}"
+                                            />
+                                        </div>
+                                    <div class="d-flex flex-column" style="margin-left:2%;">
+                                        <div class="d-flex flex-column justify-content-between">
+                                            <div>
+                                                <field name="hotel_type_id" class="m-0" widget="badge" decoration-success="1"/>
+                                            </div>
+                                            <div>
+                                                <field name="name" class="mb-0 fw-bold fs-3"/>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <field name="tagline" class="mb-0 fw-bold fs-6 fst-italic" />
+                                        </div>
+                                        <div style="margin-top:2%;">
+                                            <field name="partner_id" widget="res_partner_many2one"/>
+                                        </div>
+                                        <div>
+                                            <i class="fa fa-address-card-o me-2" title="Address" style="color:#71639e"/> <span class="fs-6 text-muted font-weight-bold"> <field name="address"/>
+                                            </span>
+                                        </div>
+                                        <div class="d-flex flex-row justify-content-between" style="margin-top:auto;">
+                                            <div>
+                                                <a t-if="record.rating_count.raw_value > 0" name="action_view_rating" class="ms-auto fs-6" type="object" tabindex="10">
+                                                    <i class="fa fa-smile-o text-success" title="Percentage of happy ratings" role="img" aria-label="Happy face"/>
+                                                    <field name="rating_percentage_satisfaction"/>%
+                                                </a>
+                                            </div>
+                                            <div class="d-flex flex-row justify-content-around align-items-center gap-3">
+                                                <div>
+                                                    <a type="object" name="action_open_rooms_list" class="oe_kanban_action"
+                                                    aria-label="View Rooms" title="View Rooms">
+                                                        <i class="fa fa-bed"/> 
+                                                    </a>
+                                                </div>
+                                                <div>
+                                                    <a type="object" name="action_go_to_website" class="oe_kanban_action text-success"
+                                                    aria-label="Goto Website" title="Website">
+                                                        <i class="fa fa-globe"/>
+                                                    </a>
+                                                </div>
+                                                <div invisible="not is_published">
+                                                    <i class="fa fa-circle" style="font-size:12px;color:green" title="Published"/>
+                                                </div>
+                                                <div invisible="is_published">
+                                                    <i class="fa fa-circle" style="font-size:12px;color:red" title="Un-Published"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                           </t>
+                        </templates>
+                    </kanban>
+                </field>
+            </record>
+            
+            <record id="view_hotel_hotels_form" model="ir.ui.view">
+                <field name="name">hotel.hotels.form</field>
+                <field name="model">hotel.hotels</field>
+                <field name="arch" type="xml">
+                    <form string="Hotels">
+                        <sheet>
+                            <div class="oe_button_box" name="button_box">
+                                <button class="oe_button_box" type="object"
+                                        name="action_open_rooms_list"
+                                        icon="fa-bed"
+                                        help="View all rooms listed under this hotel">
+                                    <div class="o_stat_info">
+                                        <span class="o_stat_text">View Rooms</span>
+                                    </div>
+                                </button>
+                                <button name="action_toggle_is_published"
+                                        invisible="not is_published"
+                                        class="oe_stat_button"
+                                        type="object"
+                                        icon="fa-globe"
+                                        help="This hotel is published on the website. Click to unpublish.">
+                                    <div class="o_stat_info o_field_widget">
+                                        <span class="o_stat_text text-success">Published</span>
+                                    </div>
+                                </button>
+                                <button name="action_toggle_is_published"
+                                        invisible="is_published"
+                                        class="oe_stat_button"
+                                        type="object"
+                                        icon="fa-eye-slash"
+                                        help="This hotel is not published on the website. Click to publish.">
+                                    <div class="o_stat_info o_field_widget">
+                                        <span class="o_stat_text text-danger">Unpublished</span>
+                                    </div>
+                                </button>
+                                <button class="oe_button_box" type="object"
+                                        name="action_view_rating"
+                                        invisible="rating_count == 0"
+                                        icon="fa-smile-o"
+                                        help="View customer ratings and satisfaction for this hotel">
+                                    <div class="o_stat_info">
+                                        <field string="% Happy" name="rating_percentage_satisfaction" widget="statinfo"/>
+                                    </div>
+                                </button>
+                                <button name="action_go_to_website"
+                                        class="oe_stat_button"
+                                        type="object"
+                                        icon="fa-globe"
+                                        help="Open this hotel page directly on the website">
+                                    <div class="o_stat_info o_field_widget">
+                                        <span class="o_stat_text text-success">Go To Website</span>
+                                    </div>
+                                </button>
+                            </div>
+                            <field name="image" widget="image" class="oe_avatar" />
+                            <div class="oe_title">
+                                <h1>
+                                    <div class="d-flex">
+                                        <field class="text-break" name="name" options="{'line_breaks': False}" widget="text" placeholder="e.g. Atlantis The Royal"/>
+                                    </div>
+                                </h1>
+                            </div>
+                            <group>
+                                <group>
+                                    <field name="partner_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" placeholder="Type to find a customer..."/>
+                                    <field name='hotel_type_id' />
+                                    <field name='tagline' />
+                                </group>
+                                <group>
+                                    <field name="website_id"></field>
+                                    <field name="default_timezone"></field>
+                                    <field name="company_id" />
+                                </group>
+                            </group>
+                            <notebook>
+                                <page string="Rooms">
+                                    <field name="room_ids">
+                                        <list>
+                                            <field name="name" />
+                                            <field name="facility_ids" readonly='True' widget="many2many_tags" />
+                                            <field name="product_variant_count" string="Number of Rooms" widget="badge"/>
+                                        </list>
+                                    </field>
+                                </page>
+                                <page string='Extra Info'>
+                                    <group colspan="2">
+                                        <field name="review_display_limit"/>
+                                    </group>
+                                    <group colspan="2" name="Hotel Banner" string="Hotel Banner">
+                                        <field
+                                            colspan="2"
+                                            widget="image" options="{'size': [200, 200]}"
+                                            name="banner"
+                                            context="{'default_name': name}"
+                                            add-label="Add Banner"
+                                            nolabel="1"
+                                        />
+                                    </group>
+
+                                    <group colspan="2" name="Hotel Images" string="Hotel Media">
+                                        <field
+                                            colspan="2"
+                                            name="hotel_image_ids"
+                                            class="o_website_sale_image_list"
+                                            context="{'default_name': name}"
+                                            mode="kanban"
+                                            add-label="Add Media"
+                                            nolabel="1"
+                                            widget="x2_many_media_viewer"
+                                            options="{'convert_to_webp': True}"
+                                        />
+                                    </group>
+                                </page>
+                                <page string='Description'>
+                                    <field name="description"></field>
+                                </page>
+                                <page string='Policies And Required Documents'>
+                                    <group>
+                                        <field name="required_document_ids" widget="many2many_tags"/>
+					<field name="apply_charge_for" />                                        
+					<field name="policies"></field>
+                                    </group>
+                                </page>
+                                <page string="Advance Payment Configs">
+                                    <group>
+                                        <group>
+                                            <field name="required_advance_payment" />
+                                        </group>
+                                        <group>
+                                            <field name="advance_payment_type"
+                                                invisible="not required_advance_payment" />
+                                            <field name="advance_payment_value"
+                                                invisible="(not required_advance_payment) or (advance_payment_type != 'fixed')"
+                                                required="advance_payment_type == 'fixed'" />
+                                            <field name="advance_payment_percentage"
+                                                invisible="(not required_advance_payment) or (advance_payment_type != 'percentage')"
+                                                required="advance_payment_type == 'percentage'" />
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
+                        </sheet>
+                        <chatter />
+                    </form>
+                </field>
+            </record>
+
+            <record id="view_hotel_hotels_list" model="ir.ui.view">
+                <field name="name">hotel.hotels.list</field>
+                <field name="model">hotel.hotels</field>
+                <field name="arch" type="xml">
+                    <list string="Hotels">
+                        <field name="name" />
+                        <field name="partner_id" />
+                        <field name="address" />
+                        <field name="is_published" widget="boolean_toggle"/>
+                    </list>
+                </field>
+            </record>
+            <record id="hotel_room_dashboard_kanban_view" model="ir.ui.view">
+                <field name="name">Kanban.Hotel.Room.Dashboard.View</field>
+                <field name="model">product.product</field>
+                <field name="arch" type="xml">
+                    <kanban sample="1">
+                        <field name="currency_id"/>
+                        <field name="activity_state"/>
+                        <field name="categ_id"/>
+                        <field name="is_available_today"/>
+                        <templates>
+                            <t t-name="card" class="d-flex flex-column">
+                                <div class="d-flex flex-row">
+                                    <aside>
+                                        <field
+                                            name="image_128"
+                                            widget="image"
+                                            alt="Product"
+                                            options="{'img_class': 'rounded', 'size': [100, 100]}"
+                                            invisible="not image_128"
+                                        />
+                                    </aside>
+                                    <main class="ps-2 ">
+                                        <div class='d-flex justify-content-between align-items-start flex-wrap'>
+                                            <div>
+                                                <div class="mb-1">
+                                                    <div class="d-flex mb-0 h5">
+                                                        <field class="me-1" name="is_favorite" widget="boolean_favorite" nolabel="1"/>
+                                                        <field name="display_name" class="text-truncate"/>
+                                                    </div>
+                                                    <span t-if="record.default_code.value">
+                                                        [
+                                                        <field name="default_code"/>]
+                                                    </span>
+                                                </div>
+                                                <span>
+                                                    <field name="list_price" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>/night
+                                                </span>
+                                                <field name="product_properties" widget="properties"/>
+                                            </div>
+                                            <div>
+                                                <span invisible="not is_available_today" style='padding: 2px 4px; font-weight: 700; font-size: 10px;' class="rounded-pill bg-success text-white">
+                                                    Available
+                                                </span>
+                                                <span invisible="is_available_today" style='padding: 2px 4px; font-weight: 700; font-size: 10px;' class="rounded-pill bg-danger text-white">
+                                                    Not Available
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <field name="hotel_id"/>
+                                            <div class="d-flex gap-2">
+                                                <span t-if="record.max_adult">
+                                                    <i class="fa fa-male" aria-hidden="true" title="Max Adults"></i> <field name="max_adult"/>
+                                                </span>
+                                                <span t-if="record.max_child">
+                                                    <i class="fa fa-child" aria-hidden="true" title="Max Child"></i> <field name="max_child"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </main>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2 gap-2">
+                                    <div>
+                                        <button type="object" name="action_view_room_bookings"
+                                                class="btn btn-sm btn-outline-primary">
+                                            View Bookings
+                                        </button>
+                                    </div>
+                                    <div invisible="not is_available_today">
+                                        <button name="action_book_room"
+                                                type="object"
+                                                class="btn btn-primary btn-sm"
+                                                string="Book Now"
+                                                />
+                                    </div>
+                                </div>
+                            </t>
+                        </templates>
+                    </kanban>
+                </field>
+            </record>
+
+            <record id="hotel_room_product_template_kanban_inherit" model="ir.ui.view">
+                <field name="name">hotel.room.product.template.kanban.inherit</field>
+                <field name="model">product.template</field>
+                <field name="arch" type="xml">
+                    <kanban sample="1">
+                        <field name="currency_id"/>
+                        <field name="activity_state"/>
+                        <field name="categ_id"/>
+                        <templates>
+                            <t t-name="card" class="d-flex flex-column">
+                                <div class="d-flex flex-row">
+                                    <aside>
+                                        <field
+                                            name="image_128"
+                                            widget="image"
+                                            alt="Product"
+                                            options="{'img_class': 'rounded', 'size': [100, 100]}"
+                                            invisible="not image_128"
+                                        />
+                                    </aside>
+                                    <main class="ps-2 ">
+                                        <div class='d-flex justify-content-between align-items-start flex-wrap'>
+                                            <div>
+                                                <div class="mb-1">
+                                                    <div class="d-flex mb-0 h5">
+                                                            <field class="me-1" name="is_favorite" widget="boolean_favorite" nolabel="1"/>
+                                                            <field name="display_name" class="text-truncate"/>
+                                                    </div>
+                                                    <span t-if="record.default_code.value">
+                                                        [
+                                                        <field name="default_code"/>]
+                                                    </span>
+                                                </div>
+                                                <span>
+                                                    <field name="list_price" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>/night
+                                                </span>
+                                                <field name="product_properties" widget="properties"/>
+                                            </div>
+                                            <div>
+                                                <span invisible="not is_published">
+                                                    <i class="fa fa-circle" style="font-size:12px;color:green" title="Published"/>
+                                                </span>
+                                                <span invisible="is_published">
+                                                    <i class="fa fa-circle" style="font-size:12px;color:red" title="Un-Published"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <field name="hotel_id"/>
+                                            <div class="d-flex gap-2">
+                                                <span t-if="record.max_adult">
+                                                    <i class="fa fa-male" aria-hidden="true" title="Max Adults"></i> <field name="max_adult"/>
+                                                </span>
+                                                <span t-if="record.max_child">
+                                                    <i class="fa fa-child" aria-hidden="true" title="Max Child"></i> <field name="max_child"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </main>
+                                </div>
+                            </t>
+                        </templates>
+                    </kanban>
+                </field>
+            </record>
+
+            <record id="action_hotel_hotels" model="ir.actions.act_window">
+                <field name="name">Hotels</field>
+                <field name="res_model">hotel.hotels</field>
+                <field name="view_mode">kanban,list,form</field>
+            </record>
+
+            <record id="action_hotel_management_menu" model="ir.actions.act_window">
+                <field name="name">Hotels</field>
+                <field name="res_model">hotel.hotels</field>
+                <field name="view_mode">kanban,form,list</field>
+                <field name="view_id" ref="hotel_management_system.view_hotel_hotels_kanban"/>
+            </record>
+
+            <record id="action_hotel_management_booking_product" model="ir.actions.act_window">
+                <field name="name">Rooms</field>
+                <field name="res_model">product.template</field>
+                <field name="view_mode">kanban,form,list</field>
+                <field name="domain">[('is_room_type','=',True)]</field>
+                <field name="view_id" ref="hotel_management_system.hotel_room_product_template_kanban_inherit"/>
+                <field name="context">{'default_is_room_type': True}</field>
+                <field name="help" type="html">
+                    <p class="o_view_nocontent_room">
+                Add new Room
+                    </p>
+                </field>
+            </record>
+            <!-- Actions For Room Dashboard -->
+            <record id="action_hotel_room_dashboard" model="ir.actions.act_window">
+                <field name="name">Today's Room Availability Dashboard</field>
+                <field name="res_model">product.product</field>
+                <field name="view_mode">kanban,form,list</field>
+                <field name="domain">[('is_room_type','=',True)]</field>
+                <field name="context">{'default_is_room_type': True}</field>
+                <field name="view_id" ref="hotel_management_system.hotel_room_dashboard_kanban_view"/>
+            </record>
+        </odoo>
+    </data>
+</odoo>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="action_report_saleorder_letterhead"
+            model="ir.actions.report">
+        <field name="name">Quotation/Order (Letterhead)</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sale_order_letterhead_report.report_saleorder_letterhead</field>
+        <field name="report_file">sale_order_letterhead_report.report_saleorder_letterhead</field>
+        <field name="print_report_name">(object.state in ('draft', 'sent') and 'Quotation (Letterhead) - %s' % (object.name)) or 'Order (Letterhead) - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!--
+        Fixed-height empty header area for pre-printed letterhead paper.
+        Adjust letterhead_header_height below to match your stationery.
+    -->
+    <template id="report_layout_letterhead">
+        <t t-if="not o" t-set="o" t-value="doc"/>
+
+        <t t-if="not company">
+            <t t-if="company_id">
+                <t t-set="company" t-value="company_id"/>
+            </t>
+            <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                <t t-set="company" t-value="o.company_id.sudo()"/>
+            </t>
+            <t t-else="">
+                <t t-set="company" t-value="res_company"/>
+            </t>
+        </t>
+
+        <t t-set="letterhead_header_height" t-value="'80px'"/>
+
+        <div class="header o_letterhead_header"
+             t-attf-style="height: #{letterhead_header_height}; min-height: #{letterhead_header_height}; max-height: #{letterhead_header_height}; margin: 0; padding: 0; border: none; overflow: hidden;"/>
+
+        <div t-attf-class="article o_report_layout_letterhead o_table_standard o_company_#{company.id}_layout"
+             t-att-data-oe-model="o and o._name"
+             t-att-data-oe-id="o and o.id"
+             t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <t t-call="web.address_layout"/>
+            <h2 t-out="layout_document_title"/>
+            <t t-out="0"/>
+        </div>
+
+        <div t-attf-class="footer o_company_#{company.id}_layout {{report_type != 'pdf' and 'mt-auto'}}">
+            <div class="o_footer_content d-flex border-top pt-2">
+                <div class="flex-grow-1 text-start me-2" t-field="company.report_footer"/>
+                <div class="text-end text-muted">
+                    <div t-if="report_type == 'pdf' and display_name_in_footer" t-out="o.name"/>
+                    <div t-if="report_type == 'pdf'" class="text-nowrap">Page <span class="page"/> / <span class="topage"/></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="report_saleorder_letterhead_document"
+              inherit_id="sale.report_saleorder_document"
+              primary="True">
+        <xpath expr="//t[@t-call='web.external_layout']" position="attributes">
+            <attribute name="t-call">sale_order_letterhead_report.report_layout_letterhead</attribute>
+        </xpath>
+    </template>
+
+    <template id="report_saleorder_letterhead">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="sale_order_letterhead_report.report_saleorder_letterhead_document"
+                   t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

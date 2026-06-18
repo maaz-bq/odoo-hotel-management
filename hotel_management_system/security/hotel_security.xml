@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Security Category/Group -->
+        <record id="module_hotel_management_system" model="ir.module.category">
+            <field name='name'>Hotel Management</field>
+        </record>
+        
+        <record id="hotel_laundry_group" model="res.groups">
+            <field name="name">Laundry</field>
+            <field name="category_id" ref="module_hotel_management_system" />
+        </record>
+
+        <record id="hotel_housekeeper_group" model="res.groups">
+            <field name="name">Housekeeper</field>
+            <field name="implied_ids" eval="[(4, ref('hotel_laundry_group'))]" />
+            <field name="category_id" ref="module_hotel_management_system" />
+        </record>
+
+        <record id="hotel_reception_group" model="res.groups">
+            <field name="name">Reception</field>
+            <field name="implied_ids"
+                eval=" [(4, ref('hotel_laundry_group')), (4, ref('hotel_housekeeper_group')),]" />
+            <field name="category_id" ref="module_hotel_management_system" />
+        </record>
+
+        <record id="hotel_owner_group" model="res.groups">
+            <field name="name">Hotel Owner</field>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+            <field name="implied_ids"
+                eval="[
+            (4, ref('hotel_reception_group')),
+            (4, ref('hotel_laundry_group')),
+            (4, ref('base.group_user')),
+            (4, ref('base.user_admin')),
+            (4, ref('hotel_housekeeper_group')),
+        ]" />
+            <field name="category_id" ref="module_hotel_management_system" />
+        </record>
+
+        <record id="hotel_booking_comp_rule" model="ir.rule">
+            <field name="name" >Hotel Booking multi-company</field>
+            <field name="model_id" ref="model_hotel_booking"/>
+            <field name="domain_force"> ['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]</field>
+        </record>
+
+        <record id="hotel_hotels_comp_rule" model="ir.rule">
+            <field name="name" >Hotel Hotels multi-company</field>
+            <field name="model_id" ref="model_hotel_hotels"/>
+            <field name="domain_force"> ['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]</field>
+        </record>
+
+        <record id="hotel_housekeeping_comp_rule" model="ir.rule">
+            <field name="name" >Hotel housekeeping multi-company</field>
+            <field name="model_id" ref="model_hotel_housekeeping"/>
+            <field name="domain_force"> ['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]</field>
+        </record>
+
+        <record id="hotel_service_line_comp_rule" model="ir.rule">
+            <field name="name" >Hotel Service Line multi-company</field>
+            <field name="model_id" ref="model_hotel_booking_service_line"/>
+            <field name="domain_force"> ['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]</field>
+        </record>
+    </data>
+</odoo>

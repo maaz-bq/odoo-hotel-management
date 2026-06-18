@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template
+        id="external_layout_slow"
+        inherit_id="web.external_layout_standard"
+        priority="9999"
+    >
+
+        <!-- custom header -->
+        <xpath
+            expr="//div[contains(@t-attf-class, 'header')]"
+            position="replace">
+
+            <div
+                class="header"
+                style="
+                    margin: 0;
+                    padding: 0;
+                    width: 100%;
+                "
+            >
+
+                <img
+                    src="/slow_report_layout/static/src/img/header.png"
+                    style="
+                        width: 100%;
+                        height: auto;
+                        display: block;
+                    "
+                />
+
+            </div>
+
+        </xpath>
+
+        <!-- remove footer -->
+        <xpath
+            expr="//div[contains(@t-attf-class, 'footer')]"
+            position="replace"
+        >
+        </xpath>
+
+        <!-- remove the default background -->
+        <xpath
+            expr="//t[@t-set='layout_background_url']"
+            position="replace">
+        </xpath>
+
+        <!-- Add our own background -->
+        <xpath
+            expr="//div[contains(@t-attf-class, 'article')]"
+            position="attributes">
+
+            <attribute name="t-attf-style">
+                background-image: url('/slow_report_layout/static/src/img/article.png');
+                background-repeat: no-repeat;
+                background-size: 100% auto;
+                background-position: center;
+            </attribute>
+
+        </xpath>
+
+
+    </template>
+
+</odoo>

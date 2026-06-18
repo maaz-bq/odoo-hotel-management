@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>;) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- License URL : https://store.webkul.com/license.html/ -->
+<odoo>
+    <record id="view_customer_doc_form" model="ir.ui.view">
+        <field name="name">Customer Document</field>
+        <field name="model">customer.document</field>
+        <field name="arch" type="xml">
+            <form string="Customer Bill">
+                <field name="add_docs_ids" >
+                    <list editable="bottom" delete="0" create="0">
+                        <field name="req_document_id"/>
+                        <field name="file" widget="binary" filename="file_name" 
+                        options="{'accepted_file_extensions': '.pdf,.jpg,.png,.jpeg,.webp,.gif,.jpe,.jif,.jfif,.jfi,.tiff,.tif,
+                        .psd,.raw,.arw,.cr2,.nrw,.k25,.jp2,.j2k,.jpf,.jpx,.jpm,.mj2'}"/>
+                        <field name="file_name" invisible="1" optional="hide"/>
+                    </list>
+                </field>
+                <div style="color:red;">
+                    <field name="warning"/>
+                </div>
+
+                <footer>
+                    <button name="confirm_doc" class="btn btn-success btn-sm" string="Confirm"
+                        type="object" invisible="warning" />
+                    <button string="Close" class="btn btn-danger btn-sm" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_view_customer_doc" model="ir.actions.act_window">
+        <field name="name">Customer Document</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">customer.document</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

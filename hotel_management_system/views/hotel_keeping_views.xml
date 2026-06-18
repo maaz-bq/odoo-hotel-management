@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>;) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- License URL : https://store.webkul.com/license.html/ -->
+<odoo>
+
+    <!-- House Keeping List View -->
+    <record model="ir.ui.view" id="hotel_housekeeping_list_view">
+        <field name="name">hotel.housekeeping.list</field>
+        <field name="model">hotel.housekeeping</field>
+        <field name="priority" eval="20" />
+        <field name="type">list</field>
+        <field name="arch" type="xml">
+            <list string="Hotel House Keeping" create="1" default_order="sequence_id desc, id">
+                <field name='sequence_id' readonly="1" />
+                <field name='assign_to' widget="many2one_avatar_user" optional="show" />
+                <field name="schedule_date"/>
+                <field name="booking_line_id"/>
+                <field name='state' widget="badge" decoration-info="state == 'draft'"
+                    decoration-warning="state == 'in_progress'"
+                    decoration-success="state == 'completed'" />
+            </list>
+        </field>
+    </record>
+
+    <!-- House Keeping Kanban View -->
+    <record model="ir.ui.view" id="hotel_housekeeping_kanban_view">
+        <field name="name">Hotel Housekeeping Kanban View</field>
+        <field name="model">hotel.housekeeping</field>
+        <field name="priority" eval="20" />
+        <field name="type">kanban</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="card" class="d-flex flex-column">
+                        <div> 
+                            <div class="d-flex flex-row gap-2">
+                                <div class="o_kanban_image_fill position-relative">
+                                    <field
+                                        name="image_1920"
+                                        widget="image" options="{'img_class': 'rounded', 'size':[110,110]}"
+                                    />
+                                </div>
+                                <div class="d-flex flex-column gap-1" style="width:-webkit-fill-available;">
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <div>
+                                            <field name="sequence_id" class="mb-0 fw-bold fs-3"/>
+                                        </div>
+                                        <div>
+                                            <field name="state" widget="badge" decoration-info="state == 'draft'" 
+                                                decoration-warning="state == 'in_progress'" decoration-success="state == 'completed'"/>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <field name="booking_id" widget="res_partner_many2one"/>
+                                    </div>
+                                    <div>
+                                        <field name="booking_line_id" widget="badge" class="fs-6"/>
+                                    </div>
+                                    <div class="d-flex flex-row justify-content-between" style="width:-webkit-fill-available; margin-top:2%;">
+                                        <div>
+                                            <field name="assign_to" class="text-muted"/>
+                                        </div>
+                                        <div>
+                                            <button name="action_in_progress" string="In Progress" type="object"
+                                                class="btn btn-sm btn-outline-primary"
+                                                invisible="state in ('in_progress', 'completed')" />
+                                            <button name="action_completed" string="Mark as Completed" type="object"
+                                                class="btn btn-sm btn-outline-primary"
+                                                invisible="state in ('draft', 'completed')" confirm ="This action will set HouseKeeping Line items as completed."/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class ="d-flex flex-row justify-content-between" style="margin-top:2%;">
+                                <div title="Check In">
+                                    <field name="schedule_date" widget="badge"/>
+                                </div>
+                                <div invisible="not deadline" title="Check Out">
+                                    <field name="deadline" widget="badge" decoration-danger="1"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <!-- House Keeping Form View -->
+    <record model="ir.ui.view" id="hotel_housekeeping_form_view">
+        <field name="name">hotel.housekeeping.form</field>
+        <field name="model">hotel.housekeeping</field>
+        <field name="priority" eval="21" />
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Hotel Booking" create="1" >
+                <header>
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,in_process,completed" />
+                    <button name="action_in_progress" string="In Progress" type="object"
+                        class="oe_highlight"
+                        invisible="state in ('in_progress', 'completed')" />
+                    <button name="action_completed" string="Mark as Completed" type="object"
+                        class="oe_highlight"
+                        invisible="state in ('draft', 'completed')" confirm ="This action will set HouseKeeping Line items as completed."/>
+                    <button name="action_draft" string="Reset To Draft" type="object" class=""
+                        invisible="state != 'in_progress'" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name='sequence_id' readonly="1" />
+                        </h1>
+                    </div>
+                    <field name="image_1920" widget="image" class="oe_avatar" />
+                    <group>
+                        <group>
+                            <!-- <field name="room_id" /> -->
+                            <field name="booking_id" required="True" readonly="state == 'completed'"/>
+                            <field name="assign_to" readonly="state == 'completed'" required="True"/>
+                            <field name="schedule_date" readonly="state == 'completed'"/>
+                            <field name="deadline" readonly="state == 'completed'"/>
+                        </group>
+                        <group>
+                            <field name="booking_line_id"
+                                domain="[('booking_id', '=', booking_id), ('product_id.is_room_type', '=', True)]" required="True" readonly="state == 'completed'"/>
+                            <field name="team_id" readonly="state == 'completed'" required="True"/>
+                            <field name="responsible" readonly="state == 'completed'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="House Keeping Items">
+                            <field name="house_keeping_line_ids" widget="one2many" mode="list" readonly="state == 'completed'">
+                                <list editable="bottom" delete="status != 'completed'">
+                                    <field name="item_id"/>
+                                    <field name="remarks"/>
+                                    <button name="action_in_progress" string="In Progress" type="object"
+                                        class="oe_highlight"
+                                        invisible="status in ('in_progress', 'completed')" />
+                                    <button name="action_completed" string="Mark as Completed" type="object"
+                                        class="oe_highlight"
+                                        invisible="status in ('draft', 'completed')" />
+                                    <button name="action_draft" string="Reset To Draft" type="object" class=""
+                                        invisible="status in ('completed','draft')" />
+                                    <button string="Done" invisible="status not in ('completed')" 
+                                        class="text-bg-success"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View For Hotel Housekeeping Model -->
+    <record id="view_hotel_keeping_filter" model="ir.ui.view">
+        <field name="name">hotel.housekeeping.list.select</field>
+        <field name="model">hotel.housekeeping</field>
+        <field name="mode">primary</field>
+        <field name="priority" eval="15" />
+        <field name="arch" type="xml">
+            <search string="Search House Keeping Records">
+                <filter string="Draft" name="draft" domain="[('state','=','draft')]" />
+                <filter string="In Progress" name="progress" domain="[('state','=','in_progress')]" />
+                <filter string="Completed" name="completed" domain="[('state','=','completed')]" />
+                <group string="Group By">
+                    <filter string="state" name='state' context="{'group_by':'state'}" />
+                    <filter string="Assigned User" name='user' context="{'group_by':'assign_to'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action for House Keeping -->
+    <record id="action_hotel_house_keeping" model="ir.actions.act_window">
+        <field name="name">House Keeping</field>
+        <field name="res_model">hotel.housekeeping</field>
+        <field name="view_ids"
+            eval="[(5,0,0),
+            (0,0,{'sequence':1,'view_mode':'kanban','view_id':ref('hotel_management_system.hotel_housekeeping_kanban_view')}),
+            (0,0,{'sequence':2,'view_mode':'list','view_id':ref('hotel_management_system.hotel_housekeeping_list_view')}),
+            (0,0,{'sequence':3,'view_mode':'form','view_id':ref('hotel_management_system.hotel_housekeeping_form_view')}),
+            ]" />
+        <field name="search_view_id" ref="view_hotel_keeping_filter" />
+        <field name="view_mode">kanban,list</field>
+    </record>
+    
+    <record id="crm_team_inherited_view_id" model="ir.ui.view">
+        <field name="name">Crm Team Inherited View</field>
+        <field name="model">crm.team</field>
+        <field name="inherit_id" ref="sales_team.crm_team_view_form"/>
+        <field name="arch" type="xml">
+            
+            <page name="members_users" position="after">
+                <page string="Housekeeping Configuration">
+                    <group>
+                        <field name="is_housekeeping" widget="boolean_toggle" />
+                        <field name="auto_assignment_housekeeping" widget="boolean_toggle" 
+                            invisible="not is_housekeeping"/>
+                        <field name="assign_method_housekeeping" class="o_light_label w-100" 
+                            widget="radio" invisible="not auto_assignment_housekeeping or not is_housekeeping"/>
+                    </group>
+                </page>
+            </page>
+        </field>
+    </record>
+</odoo>

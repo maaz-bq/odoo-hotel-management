@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>;) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- License URL : https://store.webkul.com/license.html/ -->
+<odoo>
+    <record id="view_booking_tenure_wizard_form" model="ir.ui.view">
+        <field name="name">booking.tenure.wizard.form</field>
+        <field name="model">booking.tenure.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reschedule Stay">
+                <group>
+                    <group>
+                        <field name="check_in" required="1" readonly="context.get('status') == 'allot'"/>
+                    </group>
+                    <group>
+                        <field name="check_out" required="1"/>
+                    </group>
+                </group>
+
+                <field name="warning" invisible="not warning" readonly="1" nolabel="1" style="color:red;"/>
+
+                <footer>
+                    <button name="action_confirm_tenure_update"
+                        string="Confirm Changes"
+                        type="object"
+                        class="btn-primary"
+                        invisible="warning or not available"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

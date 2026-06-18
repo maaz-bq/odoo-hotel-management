@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>;) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- License URL : https://store.webkul.com/license.html/ -->
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="hotel_facility_view_tree">
+            <field name="name">hotel.facility.list</field>
+            <field name="model">hotel.facility</field>
+            <field name="type">list</field>
+            <field name="arch" type="xml">
+                <list string="Hotel Facility">
+                    <field name='name'/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_hotel_facility_kanban" model="ir.ui.view">
+            <field name="name">hotel.facility.kanban</field>
+            <field name="model">hotel.facility</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="logo"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="d-flex flex-row gap-2">
+                                <div class="o_kanban_image_fill position-relative">
+                                    <field
+                                        name="logo"
+                                        widget="image" options="{'img_class': 'rounded', 'size':[60,60]}"
+                                    />
+                                </div>
+                                <div>
+                                    <field name="name" class="mb-0 fw-bold fs-3 text-info"/>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="hotel_facility_view_form">
+            <field name="name">hotel.facility.form</field>
+            <field name="model">hotel.facility</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Hotel Facility">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name='name' required='true'/>
+                                <!-- <field name='price'/> -->
+                            </group>
+                            <group>
+                                <field name="logo" widget="image" class="oe_avatar"/>
+                            </group>
+                        </group>
+
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="action_hotel_facility_menu" model="ir.actions.act_window">
+            <field name="name">Facilities</field>
+            <field name="res_model">hotel.facility</field>
+            <field name="view_mode">kanban,list,form</field>
+        </record>
+
+        
+        
+        <record id="action_housekeeping_products_form" model="ir.actions.act_window">
+            <field name="name">Housekeeping Items</field>
+            <field name="res_model">house.keeping.items</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    
+       <record id="housekeeping_products_list" model="ir.ui.view">
+            <field name="name"> Housekeeping Items</field>
+            <field name="model">house.keeping.items</field>
+            <field name="type">list</field>
+            <field name="arch" type="xml">
+                <list string="Housekeeping Items">
+                    <field name="name" required="1"/>
+                    <field name="product_id" required="1"/>
+                    <field name="is_auto_added" widget="boolean_toggle"/>
+                </list>
+            </field>
+       </record>
+       
+       <record id="housekeeping_products_form" model="ir.ui.view">
+            <field name="name"> Housekeeping Items</field>
+            <field name="model">house.keeping.items</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Housekeeping Items">
+                    <sheet>
+                        <group col="2">
+
+                            <group>
+                                <field name="name" />
+                                <field name="product_id" required="1"/>
+                            </group>
+
+                            <group>
+                                <field name="is_auto_added" widget="boolean_toggle"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+       </record>
+
+        <record id="action_housekeeping_team" model="ir.actions.act_window">
+            <field name="name">Housekeeping Team</field>
+            <field name="res_model">crm.team</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('is_housekeeping', '=', True)]</field>
+        </record>
+
+    </data>
+</odoo>

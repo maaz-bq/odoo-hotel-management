@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>;) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- License URL : https://store.webkul.com/license.html/ -->
+<odoo>
+    <data noupdate="1">
+        <!-- Auto Confirm Booking configuration default value is True -->
+        <function model="ir.config_parameter" name="set_param" eval="('hotel_management_system.auto_confirm_booking', 'True')"/>
+        <!-- Restrict Booking Allotment configuration default value is True -->
+        <function model="ir.config_parameter" name="set_param" eval="('hotel_management_system.restrict_booking_allotment', 'True')"/>
+    </data>
+</odoo>

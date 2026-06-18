@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>;) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- License URL : https://store.webkul.com/license.html/ -->
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="hotel_service_view_tree">
+            <field name="name">hotel.service.list</field>
+            <field name="model">hotel.service</field>
+            <field name="type">list</field>
+            <field name="arch" type="xml">
+                <list string="Hotel Service">
+                    <field name='name' />
+                </list>
+            </field>
+        </record>
+
+        <record id="view_hotel_service_kanban" model="ir.ui.view">
+            <field name="name">hotel.service.kanban</field>
+            <field name="model">hotel.service</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="id" />
+                    <field name="name" />
+                    <field name="logo" />
+                    <templates>
+                        <t t-name="card">
+                            <div class="d-flex flex-row gap-2">
+                                <div class="o_kanban_image_fill position-relative">
+                                    <field
+                                        name="logo"
+                                        widget="image" options="{'img_class': 'rounded', 'size':[60,60]}"
+                                    />
+                                </div>
+                                <div class="d-flex flex-column" style="width:-webkit-fill-available;">
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <div>
+                                            <field name="name" class="mb-0 fw-bold fs-3"/>
+                                        </div>
+                                        <div>
+                                            <field name="service_type" widget="badge" decoration-success="service_type == 'free'" decoration-warning="service_type == 'paid'"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="hotel_service_view_form">
+            <field name="name">hotel.service.form</field>
+            <field name="model">hotel.service</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Hotel Service">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name='name' required='1' />
+                                <field name='service_type' />
+                                <field name = "product_id" required="service_type == 'paid'" invisible="service_type != 'paid'"/>
+                                <field name = "amount" required="service_type == 'paid'" invisible="service_type != 'paid'"/>
+                            </group>
+                            <group>
+                                <field name="logo" widget="image" class="oe_avatar" />
+                               
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Alloted Services List View -->
+        <record model="ir.ui.view" id="alloted_services_list_view">
+            <field name="name">Alloted Services Tree</field>
+            <field name="model">hotel.booking.service.line</field>
+            <field name="priority" eval="20" />
+            <field name="type">list</field>
+            <field name="arch" type="xml">
+                <list string="Alloted Services" create="0" default_order="sequence_id desc, id">
+                    <field name='sequence_id' />
+                    <field name='assign_to' widget="many2one_avatar_user" optional="show" />
+                    <field name='service_id' />
+                    <field name='amount' invisible='not amount' />
+                    <button name="action_completed" string="Mark as Done"
+                                            type="object"
+                                            class="oe_highlight"
+                                            invisible="state in ('done','cancel')" />
+                                        <button name="action_service_cancel" string="Cancel" class="btn-secondary" type="object" invisible="state in ('done','cancel')"/>  
+                </list>
+            </field>
+        </record>
+
+        <!-- Alloted Services Kanban View -->
+        <record model="ir.ui.view" id="alloted_services_kanban_view">
+            <field name="name">Alloted Services Kanban View</field>
+            <field name="model">hotel.booking.service.line</field>
+            <field name="priority" eval="2000" />
+            <field name="type">kanban</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <template>
+                        <t t-name="card" class="d-flex flex-column">
+                            <div class="d-flex flex-row">
+                                <aside class="o_kanban_aside_full">
+                                    <field
+                                        name="image_1920"
+                                        widget="image"
+                                        alt="Product"
+                                        options="{'img_class': 'rounded', 'size': [110, 110]}"
+                                        invisible="not image_1920"
+                                    />
+                                </aside>
+                                <main class="ps-2 ">
+                                    <div class='d-flex justify-content-between align-items-start flex-wrap'>
+                                        <div class="d-flex flex-column gap-1" style="width:-webkit-fill-available;">
+                                            <div class="d-flex flex-row justify-content-between">
+                                                <div>
+                                                    <field name="sequence_id" class="mb-0 fw-bold fs-3"/>
+                                                </div>
+                                                <div>
+                                                    <field name="state" widget="badge" decoration-info="state == 'draft'" 
+                                                        decoration-warning="state == 'confirm'" decoration-success="state == 'done'"
+                                                        decoration-danger="state == 'cancel'"/>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <field name="service_id"/>
+                                            </div>
+                                            <div>
+                                                <field name="booking_id" widget="res_partner_many2one"/>
+                                            </div>
+                                            <div class="d-flex flex-row justify-content-between">
+                                                <div>
+                                                    <field name="booking_line_id" widget="badge"/>
+                                                </div>
+                                                <div>
+                                                    <field name="assign_to" widget="many2one_avatar_user" class="fs-3"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </main>
+                            </div>
+                        </t>
+                    </template>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Alloted Services Form View -->
+        <record model="ir.ui.view" id="alloted_services_form_view">
+            <field name="name">Alloted Services Form</field>
+            <field name="model">hotel.booking.service.line</field>
+            <field name="priority" eval="21" />
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Alloted Services" create="0">
+                <header>
+                 <field name="state" widget="statusbar"
+                        statusbar_visible="draft,confirm,done" />
+                </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name='sequence_id' readonly="1" />
+                            </h1>
+                        </div>
+                        <group col="2">
+                            <group>
+                                <field name='service_id' readonly="state == 'done'" />
+                                <field name="booking_id" required="1" readonly="state == 'done'"/>
+                                <field name='amount' readonly="state == 'done'" invisible='not amount' />
+                            </group>
+                            <group>
+                                <field name="assign_to" widget="many2one_avatar_user" readonly="state == 'done'"/>
+                                <field name="booking_line_id" required="1" readonly="state == 'done'" />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Actions -->
+        <record id="action_hotel_service_menu" model="ir.actions.act_window">
+            <field name="name">Services</field>
+            <field name="res_model">hotel.service</field>
+            <field name="view_mode">kanban,list,form</field>
+        </record>
+
+        <record id="view_hotel_service_lines_filter" model="ir.ui.view">
+            <field name="name">hotel.booking.service.line.filter</field>
+            <field name="model">hotel.booking.service.line</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="15" />
+            <field name="arch" type="xml">
+                <search string="Search Hotel Service lines Records">
+                    <filter string="Draft" name="draft" domain="[('state','=','draft')]" />
+                    <filter string="Confirmed" name="confirm" domain="[('state','=','confirm')]" />
+                    <filter string="Cancelled" name="cancel" domain="[('state','=','cancel')]" />
+                    <filter string="Done" name="done" domain="[('state','=','done')]" />
+                    <group string="Group By">
+                        <filter string="state" name='state' context="{'group_by':'state'}" />
+                        <filter string="Booking" name='booking_id' context="{'group_by':'booking_id'}" />
+                        <filter string="Assigned User" name='user' context="{'group_by':'assign_to'}" />
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action for House Service (Alloted) -->
+        <record id="action_hotel_service_lines_menu" model="ir.actions.act_window">
+            <field name="name">Alloted Services</field>
+            <field name="res_model">hotel.booking.service.line</field>
+            <field name="view_ids"
+                eval="[(5,0,0),
+            (0,0,{'sequence':1,'view_mode':'kanban','view_id':ref('hotel_management_system.alloted_services_kanban_view')}),
+            (0,0,{'sequence':2,'view_mode':'list','view_id':ref('hotel_management_system.alloted_services_list_view')}),
+            (0,0,{'sequence':3,'view_mode':'form','view_id':ref('hotel_management_system.alloted_services_form_view')}),
+            ]" />
+            <!-- <field name="search_view_id" ref="view_hotel_keeping_filter" /> -->
+            <field name="view_mode">kanban,list</field>
+        </record>
+
+        <!-- Menus -->
+        <record model="ir.ui.view" id="hotel_email_template_tree">
+            <field name="name">hotel.email.template.list</field>
+            <field name="model">mail.template</field>
+            <field name="inherit_id" ref="mail.email_template_tree"></field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+                <xpath expr="//field[@name='description']" position="attributes">
+                    <attribute name="optional">hide</attribute>
+                </xpath>
+                <xpath expr="//field[@name='subject']" position="attributes">
+                    <attribute name="optional">show</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_hotel_email_template_tree_all">
+            <field name="name">Email Templates</field>
+            <field name="res_model">mail.template</field>
+            <field name="path">hotel-templates</field>
+            <field name="view_mode">form,list</field>
+            <field name="view_id" ref="mail.email_template_tree" />
+            <field name="domain">[('model_id', '=', 'hotel.booking')]</field>
+        </record>
+    </data>
+</odoo>
